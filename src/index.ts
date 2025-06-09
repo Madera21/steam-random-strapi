@@ -4,17 +4,34 @@ export default {
   /**
    * An asynchronous register function that runs before
    * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
    */
   register(/* { strapi }: { strapi: Core.Strapi } */) {},
 
   /**
    * An asynchronous bootstrap function that runs before
    * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
    */
-  bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {},
+  async bootstrap({ strapi } /* : { strapi: Core.Strapi } */) {
+    strapi.db.lifecycles.subscribe({
+      models: ["plugin::users-permissions.user"],
+
+      async afterCreate(event) {
+        const { result } = event;
+
+        try {
+          await strapi.documents("api::account.account").create({
+            data: {
+              username: result.username,
+              user: result.id,
+              level: 1,
+              bio: "",
+            },
+            status: 'published',
+          });
+        } catch (error) {
+          console.error("Error creating account:", error);
+        }
+      },
+    });
+  },
 };
