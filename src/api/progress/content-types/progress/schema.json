@@ -17,6 +17,16 @@
     "completed": {
       "type": "boolean",
       "default": false
+    },
+    "account": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::account.account"
+    },
+    "game": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::game.game"
     }
   }
 }

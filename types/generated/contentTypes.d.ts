@@ -620,10 +620,12 @@ export interface ApiProgressProgress extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    account: Schema.Attribute.Relation<'oneToOne', 'api::account.account'>;
     completed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    game: Schema.Attribute.Relation<'oneToOne', 'api::game.game'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
