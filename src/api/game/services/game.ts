@@ -4,7 +4,6 @@
 
 import { factories } from "@strapi/strapi";
 import fetch from "node-fetch";
-import game from "../controllers/game";
 
 const steamApiKey = process.env.STEAM_API_KEY;
 const steamID = "76561198451045399"; // Replace with a real Steam ID
@@ -14,7 +13,6 @@ type SteamPlayerSummaryResponse = {
     players: Array<Record<string, any>>;
   };
 };
-
 
 type SteamGamesOwned = {
   response: {
@@ -43,12 +41,26 @@ export default factories.createCoreService("api::game.game", ({ strapi }) => ({
         `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${steamApiKey}&steamid=${steamID}&include_appinfo=true&include_played_free_games=true&format=json`
       );
 
-      const data = await response.json() as SteamGamesOwned;
+      const data = (await response.json()) as SteamGamesOwned;
       const games = data.response.games || [];
       games.sort((a, b) => b.playtime_forever - a.playtime_forever);
       return games;
     } catch (error) {
       strapi.log.error("Failed to fetch Steam games:", error);
+      throw new Error("Steam API call failed");
+    }
+  },
+
+  async getRandomGame() {
+    try {
+      const games = await this.getSteamGames();
+      if (games.length === 0) {
+        return null;
+      }
+      const randomIndex = Math.floor(Math.random() * games.length);
+      return games[randomIndex];
+    } catch (error) {
+      strapi.log.error("Failed to fetch random Steam game:", error);
       throw new Error("Steam API call failed");
     }
   },

@@ -21,5 +21,16 @@ export default factories.createCoreController("api::game.game", ({ strapi }) => 
     } catch (error) {
       ctx.throw(500, "Failed to fetch Steam games");
     }
-  }
+  },
+  async getRandomGame(ctx) {
+    try {
+      const game = await strapi.service("api::game.game").getRandomGame();
+      if (!game) {
+        ctx.throw(404, "no games found");
+      }
+      ctx.send(game);
+    } catch (error) {
+      ctx.throw(500, "Failed to fetch random Steam game");
+    }
+  },
 }));
